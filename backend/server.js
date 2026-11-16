@@ -8,7 +8,6 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/products", productRoutes);
 
-// Penanganan error terpusat
 app.use((err, req, res, next) => {
   console.error(err);
   const status = err.status || 500;

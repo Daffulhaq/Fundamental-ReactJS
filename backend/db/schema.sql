@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS products (
   price INTEGER NOT NULL CHECK (price > 0)
 );
 
--- Data awal (hanya diisi jika tabel masih kosong)
 INSERT INTO products (name, price)
 SELECT * FROM (VALUES
   ('Pulpen', 5000),

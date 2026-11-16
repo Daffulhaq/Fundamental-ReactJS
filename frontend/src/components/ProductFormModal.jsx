@@ -1,12 +1,21 @@
 import { useState } from "react";
 
-// Dipakai untuk Tambah (product = undefined) dan Edit (product = data produk)
 export default function ProductFormModal({ product, onSave, onClose }) {
   const isEdit = Boolean(product);
   const [name, setName] = useState(product?.name ?? "");
   const [price, setPrice] = useState(product ? String(product.price) : "");
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+
+  function clearError(key) {
+    if (!errors[key] && !errors.form) return;
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      delete next.form;
+      return next;
+    });
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -41,7 +50,14 @@ export default function ProductFormModal({ product, onSave, onClose }) {
 
         <label>
           Nama Produk
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Contoh: Pulpen" />
+          <input
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              clearError("name");
+            }}
+            placeholder="Contoh: Pulpen"
+          />
         </label>
         {errors.name && <p className="error">{errors.name}</p>}
 
@@ -51,7 +67,10 @@ export default function ProductFormModal({ product, onSave, onClose }) {
             type="number"
             step="1"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => {
+              setPrice(e.target.value);
+              clearError("price");
+            }}
             placeholder="Contoh: 5000"
           />
         </label>

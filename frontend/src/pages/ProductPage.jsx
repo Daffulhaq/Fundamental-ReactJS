@@ -7,7 +7,6 @@ import DeleteConfirmModal from "../components/DeleteConfirmModal.jsx";
 export default function ProductPage() {
   const { products, loading, error, addProduct, editProduct, removeProduct } = useProducts();
   const [search, setSearch] = useState("");
-  // null = tidak ada pop-up; { type: "form" | "delete", product? }
   const [modal, setModal] = useState(null);
 
   const keyword = search.trim().toLowerCase();

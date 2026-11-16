@@ -1,7 +1,12 @@
-// Memvalidasi body POST/PUT; hasil bersih disimpan di req.product
 function validateProduct(req, res, next) {
   const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
-  const price = Number(req.body.price);
+  const rawPrice = req.body.price;
+  const price =
+    typeof rawPrice === "number"
+      ? rawPrice
+      : typeof rawPrice === "string" && rawPrice.trim() !== ""
+        ? Number(rawPrice)
+        : NaN;
   const errors = {};
 
   if (!name) errors.name = "Nama produk wajib diisi.";

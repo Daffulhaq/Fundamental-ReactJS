@@ -6,7 +6,6 @@ export default function useProducts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Muat daftar produk sekali saat komponen pertama kali tampil
   useEffect(() => {
     api
       .getProducts()

@@ -4,13 +4,11 @@ const validateProduct = require("../middleware/validateProduct");
 
 const router = express.Router();
 
-// Tolak :id yang bukan angka
 router.param("id", (req, res, next, id) => {
   if (!/^\d+$/.test(id)) return res.status(400).json({ message: "ID tidak valid." });
   next();
 });
 
-// GET /api/products -> semua produk
 router.get("/", async (req, res, next) => {
   try {
     const { rows } = await pool.query("SELECT id, name, price FROM products ORDER BY id");
@@ -20,7 +18,6 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-// POST /api/products -> tambah produk
 router.post("/", validateProduct, async (req, res, next) => {
   try {
     const { name, price } = req.product;
@@ -34,7 +31,6 @@ router.post("/", validateProduct, async (req, res, next) => {
   }
 });
 
-// PUT /api/products/:id -> ubah produk
 router.put("/:id", validateProduct, async (req, res, next) => {
   try {
     const { name, price } = req.product;
@@ -49,7 +45,6 @@ router.put("/:id", validateProduct, async (req, res, next) => {
   }
 });
 
-// DELETE /api/products/:id -> hapus produk
 router.delete("/:id", async (req, res, next) => {
   try {
     const { rowCount } = await pool.query("DELETE FROM products WHERE id = $1", [req.params.id]);
