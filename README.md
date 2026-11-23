@@ -102,15 +102,6 @@ createdb tugas_produk
 psql -d tugas_produk -f db/schema.sql
 ```
 
-> **Windows:** kalau `createdb`/`psql` bilang *“not recognized”*, berarti folder bin PostgreSQL belum masuk PATH. Tambahkan `C:\Program Files\PostgreSQL\18\bin` ke PATH, atau pakai path lengkap dulu:
->
-> ```powershell
-> & 'C:\Program Files\PostgreSQL\18\bin\createdb.exe' -U postgres tugas_produk
-> & 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -U postgres -d tugas_produk -f db\schema.sql
-> ```
->
-> Perhatikan juga nama filenya `schema.sql`, bukan `schema.sqp`.
-
 Jalankan server:
 
 ```bash
@@ -155,9 +146,7 @@ Body untuk POST dan PUT:
 { "name": "Pulpen", "price": 5000 }
 ```
 
-Validasi backend: `name` wajib dan maksimal 100 karakter; `price` berupa bilangan bulat `1..2_000_000_000`.
-
-## Laporan Pengujian
+## Testing
 
 ```bash
 npm test          # unit test data layer, model, dan validasi form
@@ -168,35 +157,10 @@ npm run build
 
 Hasil:
 
-| Pengujian | Hasil |
-| --- | --- |
-| `npm test` | 14/14 PASS |
-| `npm run test:e2e` | 11/11 PASS |
-| `npm run lint` | PASS (0 error) |
-| `npm run build` | PASS |
-
-| No | Skenario | Hasil | Bukti |
-| --- | --- | --- | --- |
-| 1 | Daftar produk tampil responsif di 1440px | PASS | <a href="assets/tugas-4-01-daftar-desktop.png"><img src="assets/tugas-4-01-daftar-desktop.png" alt="Daftar produk desktop" width="180"></a> |
-| 2 | Daftar produk tampil responsif di 390px (tanpa scroll horizontal) | PASS | <a href="assets/tugas-4-02-daftar-mobile.png"><img src="assets/tugas-4-02-daftar-mobile.png" alt="Daftar produk mobile" width="180"></a> |
-| 3 | Tambah produk lewat form tersimpan ke API | PASS | <a href="assets/tugas-4-03-tambah-produk.png"><img src="assets/tugas-4-03-tambah-produk.png" alt="Tambah produk" width="180"></a> |
-| 4 | Detail `/products/2` menampilkan data sesuai ID | PASS | <a href="assets/tugas-4-04-detail-produk.png"><img src="assets/tugas-4-04-detail-produk.png" alt="Detail produk" width="180"></a> |
-| 5 | URL tidak terdaftar menampilkan halaman 404 | PASS | <a href="assets/tugas-4-05-halaman-404.png"><img src="assets/tugas-4-05-halaman-404.png" alt="Halaman 404" width="180"></a> |
-
-Skenario lain yang diuji Playwright: validasi form kosong tanpa request, ubah data via PUT, hapus dengan konfirmasi, pencarian via query `q`, detail dengan ID tidak ada, dan pesan error saat backend gagal.
-
-## Checklist Tugas
-
-- [x] CRUD berfungsi dan tersimpan melalui API
-- [x] Detail produk sesuai `:id` dengan tautan kembali dan pesan not found
-- [x] Halaman 404 dengan tautan pemulihan
-- [x] Tampilan Tailwind yang rapi, konsisten, dan responsif
-- [x] Atomic Design sesuai template
-- [x] Branch `tugas-4` dan commit message bertema `feat(tugas-4)`
-
-## Catatan
-
-- Frontend dan backend harus berjalan bersamaan.
-- Jika halaman detail di-refresh langsung pada hosting produksi, server harus mengembalikan `index.html` untuk URL SPA (fallback).
-- Judul PR yang digunakan: `[Tugas 4] React Router, Tailwind CSS, dan Integrasi Backend`.
-  Isi deskripsi PR dapat disalin dari laporan ini.
+| No | Skenario | Bukti |
+| --- | --- | --- |
+| 1 | Daftar produk tampil responsif di 1440px | <a href="assets/tugas-4-01-daftar-desktop.png"><img src="assets/tugas-4-01-daftar-desktop.png" alt="Daftar produk desktop" width="180"></a> |
+| 2 | Daftar produk tampil responsif di 390px (tanpa scroll horizontal) | <a href="assets/tugas-4-02-daftar-mobile.png"><img src="assets/tugas-4-02-daftar-mobile.png" alt="Daftar produk mobile" width="180"></a> |
+| 3 | Tambah produk lewat form tersimpan ke API | <a href="assets/tugas-4-03-tambah-produk.png"><img src="assets/tugas-4-03-tambah-produk.png" alt="Tambah produk" width="180"></a> |
+| 4 | Detail `/products/2` menampilkan data sesuai ID | <a href="assets/tugas-4-04-detail-produk.png"><img src="assets/tugas-4-04-detail-produk.png" alt="Detail produk" width="180"></a> |
+| 5 | URL tidak terdaftar menampilkan halaman 404 | <a href="assets/tugas-4-05-halaman-404.png"><img src="assets/tugas-4-05-halaman-404.png" alt="Halaman 404" width="180"></a> |
