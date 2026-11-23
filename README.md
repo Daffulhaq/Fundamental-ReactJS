@@ -1,6 +1,15 @@
-# Manajemen Produk — Tugas 4
+# Laporan Tugas 4 — Manajemen Produk
 
 Aplikasi CRUD produk berbasis React yang memakai **React Router** untuk navigasi antarhalaman, **Tailwind CSS** untuk tampilan responsif, dan **backend Express + PostgreSQL** sebagai satu-satunya sumber data.
+
+## Ringkasan Perubahan
+
+- Menambahkan React Router dengan nested layout: `/`, `/products`, `/products/:id`, dan wildcard `*` untuk halaman 404.
+- Mengganti tampilan starter dengan utility Tailwind CSS yang responsif pada navbar, daftar produk (grid 1/2/3 kolom), form, modal konfirmasi, detail produk, dan halaman 404.
+- Mengintegrasikan seluruh CRUD ke backend: `GET /products`, `GET /products/:id`, `POST /products`, `PUT /products/:id`, `DELETE /products/:id`.
+- Menambahkan pencarian produk melalui query `q` dan validasi input di frontend serta backend.
+- Menyusun UI dengan Atomic Design: `Button`, `Navbar`, `ProductCard`, `ProductForm`, `ConfirmDialog`, `ProductGrid`, `PageLayout`, dan tiga halaman.
+- Memperbarui unit test, browser test Playwright, dan dokumentasi pengujian.
 
 ## Fitur
 
@@ -61,7 +70,7 @@ Aplikasi CRUD produk berbasis React yang memakai **React Router** untuk navigasi
 
 - Node.js ≥ 22.12 (sesuai `engines` di `package.json`)
 - npm
-- PostgreSQL
+- PostgreSQL (client `psql`/`createdb` perlu tersedia di PATH)
 
 ## Menyiapkan Backend
 
@@ -92,6 +101,15 @@ Buat database dan jalankan skema:
 createdb tugas_produk
 psql -d tugas_produk -f db/schema.sql
 ```
+
+> **Windows:** kalau `createdb`/`psql` bilang *“not recognized”*, berarti folder bin PostgreSQL belum masuk PATH. Tambahkan `C:\Program Files\PostgreSQL\18\bin` ke PATH, atau pakai path lengkap dulu:
+>
+> ```powershell
+> & 'C:\Program Files\PostgreSQL\18\bin\createdb.exe' -U postgres tugas_produk
+> & 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -U postgres -d tugas_produk -f db\schema.sql
+> ```
+>
+> Perhatikan juga nama filenya `schema.sql`, bukan `schema.sqp`.
 
 Jalankan server:
 
@@ -139,7 +157,7 @@ Body untuk POST dan PUT:
 
 Validasi backend: `name` wajib dan maksimal 100 karakter; `price` berupa bilangan bulat `1..2_000_000_000`.
 
-## Pengujian
+## Laporan Pengujian
 
 ```bash
 npm test          # unit test data layer, model, dan validasi form
@@ -147,6 +165,15 @@ npm run test:e2e  # Playwright: CRUD, routing, detail, 404, responsivitas
 npm run lint
 npm run build
 ```
+
+Hasil:
+
+| Pengujian | Hasil |
+| --- | --- |
+| `npm test` | 14/14 PASS |
+| `npm run test:e2e` | 11/11 PASS |
+| `npm run lint` | PASS (0 error) |
+| `npm run build` | PASS |
 
 | No | Skenario | Hasil | Bukti |
 | --- | --- | --- | --- |
@@ -158,8 +185,18 @@ npm run build
 
 Skenario lain yang diuji Playwright: validasi form kosong tanpa request, ubah data via PUT, hapus dengan konfirmasi, pencarian via query `q`, detail dengan ID tidak ada, dan pesan error saat backend gagal.
 
+## Checklist Tugas
+
+- [x] CRUD berfungsi dan tersimpan melalui API
+- [x] Detail produk sesuai `:id` dengan tautan kembali dan pesan not found
+- [x] Halaman 404 dengan tautan pemulihan
+- [x] Tampilan Tailwind yang rapi, konsisten, dan responsif
+- [x] Atomic Design sesuai template
+- [x] Branch `tugas-4` dan commit message bertema `feat(tugas-4)`
+
 ## Catatan
 
 - Frontend dan backend harus berjalan bersamaan.
 - Jika halaman detail di-refresh langsung pada hosting produksi, server harus mengembalikan `index.html` untuk URL SPA (fallback).
-- Detail PR dan langkah reproduksi ada di [`PR_DESCRIPTION.md`](PR_DESCRIPTION.md).
+- Judul PR yang digunakan: `[Tugas 4] React Router, Tailwind CSS, dan Integrasi Backend`.
+  Isi deskripsi PR dapat disalin dari laporan ini.
