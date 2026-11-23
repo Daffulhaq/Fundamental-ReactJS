@@ -11,8 +11,30 @@ router.param("id", (req, res, next, id) => {
 
 router.get("/", async (req, res, next) => {
   try {
+    const query = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    if (query) {
+      const pattern = `%${query.replace(/[\\%_]/g, "\\$&")}%`;
+      const { rows } = await pool.query(
+        "SELECT id, name, price FROM products WHERE name ILIKE $1 ESCAPE '\\' ORDER BY id",
+        [pattern]
+      );
+      return res.json(rows);
+    }
     const { rows } = await pool.query("SELECT id, name, price FROM products ORDER BY id");
     res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, name, price FROM products WHERE id = $1",
+      [req.params.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: "Produk tidak ditemukan." });
+    res.json(rows[0]);
   } catch (err) {
     next(err);
   }
