@@ -1,112 +1,91 @@
-# Manajemen Produk
+# Laporan Tugas 4 — Manajemen Produk
 
-Aplikasi CRUD produk sederhana berbasis React, Express, dan PostgreSQL. Pengguna dapat melihat daftar produk, mencari produk, menambah produk, mengubah data, dan menghapus produk melalui modal konfirmasi.
+Aplikasi CRUD produk berbasis React yang memakai **React Router** untuk navigasi antarhalaman, **Tailwind CSS** untuk tampilan responsif, dan **backend Express + PostgreSQL** sebagai satu-satunya sumber data.
+
+## Ringkasan Perubahan
+
+- Menambahkan React Router dengan nested layout: `/`, `/products`, `/products/:id`, dan wildcard `*` untuk halaman 404.
+- Mengganti tampilan starter dengan utility Tailwind CSS yang responsif pada navbar, daftar produk (grid 1/2/3 kolom), form, modal konfirmasi, detail produk, dan halaman 404.
+- Mengintegrasikan seluruh CRUD ke backend: `GET /products`, `GET /products/:id`, `POST /products`, `PUT /products/:id`, `DELETE /products/:id`.
+- Menambahkan pencarian produk melalui query `q` dan validasi input di frontend serta backend.
+- Menyusun UI dengan Atomic Design: `Button`, `Navbar`, `ProductCard`, `ProductForm`, `ConfirmDialog`, `ProductGrid`, `PageLayout`, dan tiga halaman.
+- Memperbarui unit test, browser test Playwright, dan dokumentasi pengujian.
 
 ## Fitur
 
-- Menampilkan daftar produk beserta harga dalam format Rupiah
-- Pencarian produk berdasarkan nama
-- Menambah produk baru melalui pop-up
-- Mengubah data produk melalui pop-up
-- Menghapus produk dengan konfirmasi
-- Validasi input di frontend dan backend
-- Pesan error yang jelas saat validasi gagal atau server tidak dapat dihubungi
-- Data tersimpan permanen di PostgreSQL
+- CRUD produk (tambah, lihat, ubah, hapus) selalu melalui API backend.
+- Pencarian produk berbasis query `q` ke backend.
+- Halaman daftar `/products` dengan grid responsif (1 / 2 / 3 kolom).
+- Halaman detail `/products/:id` yang mengambil data sesuai parameter URL, lengkap dengan tautan kembali dan pesan jelas bila produk tidak ada.
+- Halaman 404 untuk URL yang tidak terdaftar, beserta tautan ke halaman utama dan daftar produk.
+- Validasi form di frontend dan backend, dengan pesan error per field.
+- Atomic Design: `atoms → molecules → organisms → templates → pages`.
 
 ## Teknologi
 
 | Bagian | Teknologi |
-|---|---|
-| Frontend | React 18, Vite 5 |
-| Backend | Node.js, Express 4 |
+| --- | --- |
+| Frontend | React 19, Vite 7, TypeScript, React Router 7, Tailwind CSS 4 |
+| Backend | Node.js, Express 4, `pg`, `cors`, `dotenv` |
 | Database | PostgreSQL |
-| Lainnya | pg, dotenv, cors |
+| Pengujian | Node test runner (`tsx`), Playwright |
 
 ## Struktur Proyek
 
 ```text
-Fundamental-ReactJS/
-├── backend/
-│   ├── db/
-│   │   ├── pool.js
-│   │   └── schema.sql
-│   ├── middleware/
-│   │   └── validateProduct.js
-│   ├── routes/
-│   │   └── products.js
-│   ├── .env.example
-│   ├── package.json
-│   └── server.js
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── DeleteConfirmModal.jsx
-│   │   │   ├── ProductCard.jsx
-│   │   │   └── ProductFormModal.jsx
-│   │   ├── hooks/
-│   │   │   └── useProducts.js
-│   │   ├── pages/
-│   │   │   └── ProductPage.jsx
-│   │   ├── utils/
-│   │   │   └── formatPrice.js
-│   │   ├── api.js
-│   │   ├── App.jsx
-│   │   ├── index.css
-│   │   └── main.jsx
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-├── assets/
-│   └── screenshot pengujian
-└── README.md
+.
+├── app/                         # entry point + pemetaan route React Router
+│   ├── entry.tsx                # BrowserRouter
+│   ├── routes.tsx               # /, /products, /products/:id, *
+│   ├── globals.css              # Tailwind + tema + utility
+│   └── products/[id]/page.tsx   # wrapper halaman detail
+├── src/
+│   ├── components/
+│   │   ├── atoms/               # Button
+│   │   ├── molecules/           # Navbar, ProductCard, ProductForm, ConfirmDialog
+│   │   ├── organisms/           # ProductGrid
+│   │   ├── templates/           # PageLayout (Navbar + Outlet)
+│   │   └── pages/               # ProductsPage, ProductDetailPage, NotFoundPage
+│   ├── data/product/            # source → repository → model + service
+│   ├── styles/                  # tema Tailwind dan base style
+│   ├── types/                   # tipe Product / ProductValues
+│   └── utils/                   # formatRupiah
+├── backend/                     # Express API + skema PostgreSQL
+├── tests/                       # unit test & Playwright browser test
+└── assets/                      # bukti screenshot pengujian
 ```
 
-## Alur Aplikasi
+> Folder `frontend/` adalah CRUD versi lama dari tugas sebelumnya dan tidak dipakai oleh build root.
 
-1. Frontend meminta daftar produk melalui `GET /api/products` saat halaman dimuat.
-2. Daftar produk disimpan pada state React dan ditampilkan sebagai card.
-3. Form tambah dan edit mengirim data melalui `POST` atau `PUT`, lalu state lokal diperbarui tanpa reload halaman.
-4. Tombol hapus membuka modal konfirmasi sebelum mengirim `DELETE /api/products/:id`.
-5. Backend memvalidasi input, menjalankan query ke PostgreSQL, dan mengembalikan response JSON.
-6. Jika request gagal, frontend menampilkan pesan error yang sesuai.
+## Rute Aplikasi
+
+| URL | Halaman | Keterangan |
+| --- | --- | --- |
+| `/` | redirect | Dialihkan ke `/products` |
+| `/products` | `ProductsPage` | Daftar, pencarian, dan CRUD |
+| `/products/:id` | `ProductDetailPage` | Detail produk dari API; pesan "Produk tidak ditemukan" jika ID tidak ada |
+| `*` | `NotFoundPage` | Halaman 404 dengan tautan pemulihan |
 
 ## Prasyarat
 
-- Node.js 18 atau lebih baru
-- PostgreSQL
+- Node.js ≥ 22.12 (sesuai `engines` di `package.json`)
 - npm
+- PostgreSQL (client `psql`/`createdb` perlu tersedia di PATH)
 
-## Menyiapkan Database
-
-Buat database lalu jalankan skema:
-
-```bash
-createdb tugas_produk
-psql -d tugas_produk -f backend/db/schema.sql
-```
-
-Skema akan membuat tabel `products` dan mengisi 5 data awal jika tabel masih kosong.
-
-Jika database ingin dikosongkan dan diisi ulang:
-
-```sql
-TRUNCATE products RESTART IDENTITY;
-```
-
-lalu jalankan kembali `backend/db/schema.sql`.
-
-## Konfigurasi Environment
-
-Salin file contoh lalu sesuaikan koneksi database:
+## Menyiapkan Backend
 
 ```bash
-cp backend/.env.example backend/.env
+cd backend
+npm install
+cp .env.example .env
 ```
 
 Di Windows:
 
 ```powershell
-Copy-Item backend/.env.example backend/.env
+cd backend
+npm install
+Copy-Item .env.example .env
 ```
 
 Isi `backend/.env`:
@@ -116,79 +95,108 @@ PORT=3000
 DATABASE_URL=postgresql://postgres:password@localhost:5432/tugas_produk
 ```
 
-Ganti `password` dengan password PostgreSQL milikmu. Jika password mengandung karakter khusus seperti `@`, tulis dalam bentuk URL-encoded, misalnya `@` menjadi `%40`.
-
-## Menjalankan Aplikasi
-
-Jalankan backend:
+Buat database dan jalankan skema:
 
 ```bash
-cd backend
-npm install
+createdb tugas_produk
+psql -d tugas_produk -f db/schema.sql
+```
+
+> **Windows:** kalau `createdb`/`psql` bilang *“not recognized”*, berarti folder bin PostgreSQL belum masuk PATH. Tambahkan `C:\Program Files\PostgreSQL\18\bin` ke PATH, atau pakai path lengkap dulu:
+>
+> ```powershell
+> & 'C:\Program Files\PostgreSQL\18\bin\createdb.exe' -U postgres tugas_produk
+> & 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -U postgres -d tugas_produk -f db\schema.sql
+> ```
+>
+> Perhatikan juga nama filenya `schema.sql`, bukan `schema.sqp`.
+
+Jalankan server:
+
+```bash
 npm run dev
 ```
 
-Jalankan frontend di terminal lain:
+## Menyiapkan Frontend
+
+Di terminal lain, dari root repository:
 
 ```bash
-cd frontend
-npm install
+npm ci
+cp .env.example .env.local
 npm run dev
 ```
+
+Di Windows:
+
+```powershell
+npm ci
+Copy-Item .env.example .env.local
+npm run dev
+```
+
+Nilai `VITE_API_BASE_URL` harus menunjuk ke alamat backend. Nilai default-nya adalah `http://localhost:3000/api`, jadi `.env.local` opsional jika backend berjalan di port 3000.
 
 Buka `http://localhost:5173`.
-
-Frontend menggunakan proxy Vite sehingga request ke `/api` diteruskan ke `http://localhost:3000`.
 
 ## Endpoint API
 
 | Method | Endpoint | Fungsi | Status Sukses |
-|---|---|---|---|
-| GET | `/api/products` | Mengambil semua produk | 200 |
-| POST | `/api/products` | Menambah produk | 201 |
-| PUT | `/api/products/:id` | Mengubah produk | 200 |
-| DELETE | `/api/products/:id` | Menghapus produk | 204 |
+| --- | --- | --- | --- |
+| GET | `/api/products` | Daftar produk (opsional `?q=nama`) | 200 |
+| GET | `/api/products/:id` | Detail satu produk | 200 |
+| POST | `/api/products` | Tambah produk | 201 |
+| PUT | `/api/products/:id` | Ubah produk | 200 |
+| DELETE | `/api/products/:id` | Hapus produk | 204 |
 
 Body untuk POST dan PUT:
 
 ```json
-{
-  "name": "Pulpen",
-  "price": 5000
-}
+{ "name": "Pulpen", "price": 5000 }
 ```
 
-Aturan validasi:
+Validasi backend: `name` wajib dan maksimal 100 karakter; `price` berupa bilangan bulat `1..2_000_000_000`.
 
-- `name` wajib diisi, berupa teks, maksimal 100 karakter
-- `price` wajib berupa bilangan bulat lebih dari 0 dan tidak lebih dari 2.000.000.000
-- `id` pada URL harus berupa angka
+## Laporan Pengujian
 
-## Pengujian
+```bash
+npm test          # unit test data layer, model, dan validasi form
+npm run test:e2e  # Playwright: CRUD, routing, detail, 404, responsivitas
+npm run lint
+npm run build
+```
 
-Pengujian dilakukan melalui browser dan Postman. Screenshot hasil pengujian tersimpan di folder [`assets/`](assets/). Setiap skenario di bawah ini memiliki bukti screenshot dan berstatus PASS.
+Hasil:
 
-| No | Skenario | Hasil | Screenshot |
-|---|---|---|---|
-| 1 | Halaman utama dimuat dan menampilkan 5 produk awal | PASS | <a href="assets/01-halaman-utama.png"><img src="assets/01-halaman-utama.png" alt="Halaman utama" width="220"></a> |
-| 2 | Pencarian dengan kata kunci `Pulpen` | PASS | <a href="assets/02-pencarian-cocok.png"><img src="assets/02-pencarian-cocok.png" alt="Pencarian cocok" width="220"></a> |
-| 3 | Pencarian dengan kata kunci yang tidak ada | PASS | <a href="assets/03-pencarian-tidak-ditemukan.png"><img src="assets/03-pencarian-tidak-ditemukan.png" alt="Pencarian tidak ditemukan" width="220"></a> |
-| 4 | Pencarian tidak membedakan huruf besar dan kecil | PASS | <a href="assets/04-pencarian-case-insensitive.png"><img src="assets/04-pencarian-case-insensitive.png" alt="Pencarian case-insensitive" width="220"></a> |
-| 5 | Pop-up tambah produk terbuka | PASS | <a href="assets/05-popup-tambah-produk.png"><img src="assets/05-popup-tambah-produk.png" alt="Pop-up tambah produk" width="220"></a> |
-| 6 | Submit form kosong menampilkan pesan validasi | PASS | <a href="assets/06-validasi-form-kosong.png"><img src="assets/06-validasi-form-kosong.png" alt="Validasi form kosong" width="220"></a> |
-| 7 | Tambah produk berhasil dan daftar bertambah menjadi 6 produk | PASS | <a href="assets/07-tambah-produk-berhasil.png"><img src="assets/07-tambah-produk-berhasil.png" alt="Tambah produk berhasil" width="220"></a> |
-| 8 | Pop-up edit produk terbuka dengan data lama | PASS | <a href="assets/08-popup-edit-produk.png"><img src="assets/08-popup-edit-produk.png" alt="Pop-up edit produk" width="220"></a> |
-| 9 | Perubahan data produk berhasil disimpan | PASS | <a href="assets/09-edit-produk-berhasil.png"><img src="assets/09-edit-produk-berhasil.png" alt="Edit produk berhasil" width="220"></a> |
-| 10 | Tombol hapus menampilkan pop-up konfirmasi | PASS | <a href="assets/10-konfirmasi-hapus-produk.png"><img src="assets/10-konfirmasi-hapus-produk.png" alt="Konfirmasi hapus produk" width="220"></a> |
-| 11 | `GET /api/products` mengembalikan daftar produk | PASS | <a href="assets/11-api-get-produk.png"><img src="assets/11-api-get-produk.png" alt="API GET produk" width="220"></a> |
-| 12 | `POST /api/products` menambah produk baru | PASS | <a href="assets/12-api-tambah-produk.png"><img src="assets/12-api-tambah-produk.png" alt="API POST produk" width="220"></a> |
-| 13 | Produk hasil POST melalui API tampil di frontend | PASS | <a href="assets/13-hasil-tambah-via-api.png"><img src="assets/13-hasil-tambah-via-api.png" alt="Hasil tambah via API" width="220"></a> |
-| 14 | `PUT /api/products/:id` mengubah data produk | PASS | <a href="assets/14-api-edit-produk.png"><img src="assets/14-api-edit-produk.png" alt="API PUT produk" width="220"></a> |
+| Pengujian | Hasil |
+| --- | --- |
+| `npm test` | 14/14 PASS |
+| `npm run test:e2e` | 11/11 PASS |
+| `npm run lint` | PASS (0 error) |
+| `npm run build` | PASS |
 
-*Klik gambar untuk melihat ukuran penuhnya.
+| No | Skenario | Hasil | Bukti |
+| --- | --- | --- | --- |
+| 1 | Daftar produk tampil responsif di 1440px | PASS | <a href="assets/tugas-4-01-daftar-desktop.png"><img src="assets/tugas-4-01-daftar-desktop.png" alt="Daftar produk desktop" width="180"></a> |
+| 2 | Daftar produk tampil responsif di 390px (tanpa scroll horizontal) | PASS | <a href="assets/tugas-4-02-daftar-mobile.png"><img src="assets/tugas-4-02-daftar-mobile.png" alt="Daftar produk mobile" width="180"></a> |
+| 3 | Tambah produk lewat form tersimpan ke API | PASS | <a href="assets/tugas-4-03-tambah-produk.png"><img src="assets/tugas-4-03-tambah-produk.png" alt="Tambah produk" width="180"></a> |
+| 4 | Detail `/products/2` menampilkan data sesuai ID | PASS | <a href="assets/tugas-4-04-detail-produk.png"><img src="assets/tugas-4-04-detail-produk.png" alt="Detail produk" width="180"></a> |
+| 5 | URL tidak terdaftar menampilkan halaman 404 | PASS | <a href="assets/tugas-4-05-halaman-404.png"><img src="assets/tugas-4-05-halaman-404.png" alt="Halaman 404" width="180"></a> |
+
+Skenario lain yang diuji Playwright: validasi form kosong tanpa request, ubah data via PUT, hapus dengan konfirmasi, pencarian via query `q`, detail dengan ID tidak ada, dan pesan error saat backend gagal.
+
+## Checklist Tugas
+
+- [x] CRUD berfungsi dan tersimpan melalui API
+- [x] Detail produk sesuai `:id` dengan tautan kembali dan pesan not found
+- [x] Halaman 404 dengan tautan pemulihan
+- [x] Tampilan Tailwind yang rapi, konsisten, dan responsif
+- [x] Atomic Design sesuai template
+- [x] Branch `tugas-4` dan commit message bertema `feat(tugas-4)`
 
 ## Catatan
 
-- Backend dan frontend harus berjalan bersamaan.
-- Jika muncul pesan "Terjadi kesalahan pada server.", periksa koneksi database dan pastikan database `tugas_produk` sudah dibuat serta skema sudah dijalankan.
-- Jika muncul pesan "Tidak dapat terhubung ke server.", pastikan backend berjalan di port 3000.
+- Frontend dan backend harus berjalan bersamaan.
+- Jika halaman detail di-refresh langsung pada hosting produksi, server harus mengembalikan `index.html` untuk URL SPA (fallback).
+- Judul PR yang digunakan: `[Tugas 4] React Router, Tailwind CSS, dan Integrasi Backend`.
+  Isi deskripsi PR dapat disalin dari laporan ini.
